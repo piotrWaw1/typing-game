@@ -26,16 +26,27 @@ import {
 import { Progress } from '@/components/ui/progress';
 import BackToMenuButton from '@/components/chellenge/back-to-menu-button';
 import { accuracy } from '@/lib/utils';
+import { SaveRoundAction } from '@/types/round';
+import { SaveAttemptAction } from '@/types/attempt';
 
 
 interface ChallengeProps {
   set: { id: number; sentence: string | null }[];
+  title: string;
+  onSaveAttempt: SaveAttemptAction;
+  onSaveRound: SaveRoundAction;
 }
 
-export default function Challenge({ set }: ChallengeProps) {
-  const [completed, setCompleted] = useState(false);
+export default function Challenge({
+                                    set,
+                                    title,
+                                    onSaveAttempt,
+                                    onSaveRound,
+                                  }: ChallengeProps) {
   const [round, setRound] = useState(0);
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState("");
+  const [correct, setCorrect] = useState(0);
+  const [incorrect, setIncorrect] = useState(0);
 
   const [totalCorrect, setTotalCorrect] = useState(0);
   const [totalIncorrect, setTotalIncorrect] = useState(0);
@@ -43,16 +54,15 @@ export default function Challenge({ set }: ChallengeProps) {
   const [time, setTime] = useState(0);
   const [gameEnded, setGameEnded] = useState(false);
 
-  const sentence = set[round].sentence || '';
-  const timeLimit = 1;
+  const sentence = set[round].sentence || "";
+  const timeLimit = 20;
 
   const handleComplete = useCallback(
     (completedValue: string) => {
-      setCompleted(true);
       let correctCount = 0;
       let incorrectCount = 0;
 
-      completedValue.split('').forEach((char, index) => {
+      completedValue.split("").forEach((char, index) => {
         if (char === sentence[index]) {
           correctCount++;
         } else {
@@ -65,6 +75,8 @@ export default function Challenge({ set }: ChallengeProps) {
       }
       setTotalCorrect((prevState) => prevState + correctCount);
       setTotalIncorrect((prevState) => prevState + incorrectCount);
+      setCorrect(correctCount);
+      setIncorrect(incorrectCount);
     },
     [sentence],
   );
@@ -72,17 +84,31 @@ export default function Challenge({ set }: ChallengeProps) {
   useEffect(() => {
     return () => {
       setRound(0);
-      setValue('');
+      setValue("");
       setTotalCorrect(0);
       setTotalIncorrect(0);
+      setCorrect(0);
+      setIncorrect(0);
       setTime(0);
       setGameEnded(false);
     };
   }, []);
 
   useEffect(() => {
+    const saveGameAtEnd = async () => {
+      const { message, success } = await onSaveAttempt(
+        totalCorrect,
+        totalIncorrect,
+      );
+      if (success) {
+        toast.success(message);
+      } else {
+        toast.error(message);
+      }
+    };
 
     if (gameEnded) {
+      saveGameAtEnd().then();
       return;
     }
     const timer = setInterval(() => {
@@ -90,24 +116,27 @@ export default function Challenge({ set }: ChallengeProps) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameEnded]);
+  }, [gameEnded, onSaveAttempt, totalCorrect, totalIncorrect]);
 
   useEffect(() => {
+    const saveGameAtEndRound = async () => {
+      await onSaveRound(correct, incorrect, sentence);
+    };
 
     if (time >= timeLimit && round < set.length && !gameEnded) {
       handleComplete(value);
       setTime(0);
-      setValue('');
+      setValue("");
 
       const nextRound = round + 1;
       if (nextRound < set.length) {
+        saveGameAtEndRound().then();
         setRound(nextRound);
-        setCompleted(false);
       } else {
         setGameEnded(true);
       }
     }
-  }, [gameEnded, handleComplete, round, set.length, time, value]);
+  }, [correct, gameEnded, handleComplete, incorrect, onSaveRound, round, sentence, set.length, time, value]);
 
   if (!sentence) {
     return (
@@ -122,7 +151,7 @@ export default function Challenge({ set }: ChallengeProps) {
     if (newValue.length >= value.length) {
       setValue(newValue);
     } else {
-      toast.warning('Deleting is not available!');
+      toast.warning("Deleting is not available!");
     }
   };
 
@@ -131,7 +160,7 @@ export default function Challenge({ set }: ChallengeProps) {
       <Card>
         <CardHeader>
           <CardTitle>Summary</CardTitle>
-          <CardDescription>Your stats in easy mode</CardDescription>
+          <CardDescription>Your stats in {title} mode</CardDescription>
         </CardHeader>
         <CardContent>
           Total stats
@@ -172,13 +201,12 @@ export default function Challenge({ set }: ChallengeProps) {
         maxLength={sentence.length}
         spellCheck="false"
         autoFocus
-        disabled={completed}
       >
         <InputOTPGroup>
           <div className="flex flex-row flex-wrap gap-y-5 max-w-96">
-            {sentence.split('').map((char, index) => (
+            {sentence.split("").map((char, index) => (
               <div key={index} className="flex flex-col text-center gap-2">
-                {char === ' ' ? <p className="text-transparent">.</p> : char}
+                {char === " " ? <p className="text-transparent">.</p> : char}
                 <InputOTPSlot index={index} />
               </div>
             ))}
