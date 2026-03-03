@@ -1,6 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { Suspense } from 'react';
+import EasyModeRounds from '@/components/realtime-tables/easy-mode-rounds';
 
 const MODES = [
   {
@@ -42,6 +44,13 @@ export default function ProtectedPage() {
               </CardContent>
             </Card>
           ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          <div>
+            <Suspense fallback="Loading...">
+              <EasyModeRounds />
+            </Suspense>
+          </div>
         </div>
       </div>
     </div>
