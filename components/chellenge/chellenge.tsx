@@ -1,0 +1,190 @@
+'use client';
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from '@/components/ui/input-otp';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Progress } from '@/components/ui/progress';
+import BackToMenuButton from '@/components/chellenge/back-to-menu-button';
+import { accuracy } from '@/lib/utils';
+
+
+interface ChallengeProps {
+  set: { id: number; sentence: string | null }[];
+}
+
+export default function Challenge({ set }: ChallengeProps) {
+  const [completed, setCompleted] = useState(false);
+  const [round, setRound] = useState(0);
+  const [value, setValue] = useState('');
+
+  const [totalCorrect, setTotalCorrect] = useState(0);
+  const [totalIncorrect, setTotalIncorrect] = useState(0);
+
+  const [time, setTime] = useState(0);
+  const [gameEnded, setGameEnded] = useState(false);
+
+  const sentence = set[round].sentence || '';
+  const timeLimit = 1;
+
+  const handleComplete = useCallback(
+    (completedValue: string) => {
+      setCompleted(true);
+      let correctCount = 0;
+      let incorrectCount = 0;
+
+      completedValue.split('').forEach((char, index) => {
+        if (char === sentence[index]) {
+          correctCount++;
+        } else {
+          incorrectCount++;
+        }
+      });
+
+      if (completedValue.length < sentence.length) {
+        incorrectCount += sentence.length - completedValue.length;
+      }
+      setTotalCorrect((prevState) => prevState + correctCount);
+      setTotalIncorrect((prevState) => prevState + incorrectCount);
+    },
+    [sentence],
+  );
+
+  useEffect(() => {
+    return () => {
+      setRound(0);
+      setValue('');
+      setTotalCorrect(0);
+      setTotalIncorrect(0);
+      setTime(0);
+      setGameEnded(false);
+    };
+  }, []);
+
+  useEffect(() => {
+
+    if (gameEnded) {
+      return;
+    }
+    const timer = setInterval(() => {
+      setTime((prevTime) => prevTime + 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [gameEnded]);
+
+  useEffect(() => {
+
+    if (time >= timeLimit && round < set.length && !gameEnded) {
+      handleComplete(value);
+      setTime(0);
+      setValue('');
+
+      const nextRound = round + 1;
+      if (nextRound < set.length) {
+        setRound(nextRound);
+        setCompleted(false);
+      } else {
+        setGameEnded(true);
+      }
+    }
+  }, [gameEnded, handleComplete, round, set.length, time, value]);
+
+  if (!sentence) {
+    return (
+      <div>
+        Something went wrong!
+        <BackToMenuButton />
+      </div>
+    );
+  }
+
+  const handleChange = (newValue: string) => {
+    if (newValue.length >= value.length) {
+      setValue(newValue);
+    } else {
+      toast.warning('Deleting is not available!');
+    }
+  };
+
+  if (gameEnded) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Summary</CardTitle>
+          <CardDescription>Your stats in easy mode</CardDescription>
+        </CardHeader>
+        <CardContent>
+          Total stats
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Correct</TableHead>
+                <TableHead>Incorrect</TableHead>
+                <TableHead>Accuracy</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow className="text-center">
+                <TableCell className="text-green-600">{totalCorrect}</TableCell>
+                <TableCell className="text-red-600">{totalIncorrect}</TableCell>
+                <TableCell>{accuracy(totalCorrect, totalIncorrect)}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </CardContent>
+        <CardFooter>
+          <BackToMenuButton />
+        </CardFooter>
+      </Card>
+    );
+  }
+
+  return (
+    <div>
+      <div className="mb-4">
+        <p>Timer: {time}</p>
+        <Progress max={timeLimit} value={time * 5} className="w-[60%]" />
+      </div>
+      <InputOTP
+        value={value}
+        onChange={handleChange}
+        onComplete={handleComplete}
+        maxLength={sentence.length}
+        spellCheck="false"
+        autoFocus
+        disabled={completed}
+      >
+        <InputOTPGroup>
+          <div className="flex flex-row flex-wrap gap-y-5 max-w-96">
+            {sentence.split('').map((char, index) => (
+              <div key={index} className="flex flex-col text-center gap-2">
+                {char === ' ' ? <p className="text-transparent">.</p> : char}
+                <InputOTPSlot index={index} />
+              </div>
+            ))}
+          </div>
+        </InputOTPGroup>
+      </InputOTP>
+    </div>
+  );
+}
