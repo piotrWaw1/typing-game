@@ -1,34 +1,15 @@
 'use client';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from '@/components/ui/input-otp';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
 import BackToMenuButton from '@/components/chellenge/back-to-menu-button';
 import { accuracy } from '@/lib/utils';
 import { SaveRoundAction } from '@/types/round';
 import { SaveAttemptAction } from '@/types/attempt';
-
 
 interface ChallengeProps {
   set: { id: number; sentence: string | null }[];
@@ -37,16 +18,13 @@ interface ChallengeProps {
   onSaveRound: SaveRoundAction;
 }
 
-export default function Challenge({
-                                    set,
-                                    title,
-                                    onSaveAttempt,
-                                    onSaveRound,
-                                  }: ChallengeProps) {
+export default function Challenge({ set, title, onSaveAttempt, onSaveRound }: ChallengeProps) {
   const [round, setRound] = useState(0);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('');
   const [correct, setCorrect] = useState(0);
   const [incorrect, setIncorrect] = useState(0);
+
+  const [disableIsComplete, setDisableisComplete] = useState(false);
 
   const [totalCorrect, setTotalCorrect] = useState(0);
   const [totalIncorrect, setTotalIncorrect] = useState(0);
@@ -54,15 +32,16 @@ export default function Challenge({
   const [time, setTime] = useState(0);
   const [gameEnded, setGameEnded] = useState(false);
 
-  const sentence = set[round].sentence || "";
+  const sentence = set[round].sentence || '';
   const timeLimit = 20;
 
   const handleComplete = useCallback(
     (completedValue: string) => {
+      setDisableisComplete(true);
       let correctCount = 0;
       let incorrectCount = 0;
 
-      completedValue.split("").forEach((char, index) => {
+      completedValue.split('').forEach((char, index) => {
         if (char === sentence[index]) {
           correctCount++;
         } else {
@@ -78,13 +57,13 @@ export default function Challenge({
       setCorrect(correctCount);
       setIncorrect(incorrectCount);
     },
-    [sentence],
+    [sentence]
   );
 
   useEffect(() => {
     return () => {
       setRound(0);
-      setValue("");
+      setValue('');
       setTotalCorrect(0);
       setTotalIncorrect(0);
       setCorrect(0);
@@ -96,10 +75,7 @@ export default function Challenge({
 
   useEffect(() => {
     const saveGameAtEnd = async () => {
-      const { message, success } = await onSaveAttempt(
-        totalCorrect,
-        totalIncorrect,
-      );
+      const { message, success } = await onSaveAttempt(totalCorrect, totalIncorrect);
       if (success) {
         toast.success(message);
       } else {
@@ -126,11 +102,12 @@ export default function Challenge({
     if (time >= timeLimit && round < set.length && !gameEnded) {
       handleComplete(value);
       setTime(0);
-      setValue("");
+      setValue('');
 
       const nextRound = round + 1;
       if (nextRound < set.length) {
         saveGameAtEndRound().then();
+        setDisableisComplete(false);
         setRound(nextRound);
       } else {
         setGameEnded(true);
@@ -151,7 +128,7 @@ export default function Challenge({
     if (newValue.length >= value.length) {
       setValue(newValue);
     } else {
-      toast.warning("Deleting is not available!");
+      toast.warning('Deleting is not available!');
     }
   };
 
@@ -201,12 +178,13 @@ export default function Challenge({
         maxLength={sentence.length}
         spellCheck="false"
         autoFocus
+        disabled={disableIsComplete}
       >
         <InputOTPGroup>
-          <div className="flex flex-row flex-wrap gap-y-5 max-w-96">
-            {sentence.split("").map((char, index) => (
-              <div key={index} className="flex flex-col text-center gap-2">
-                {char === " " ? <p className="text-transparent">.</p> : char}
+          <div className="flex max-w-96 flex-row flex-wrap gap-y-5">
+            {sentence.split('').map((char, index) => (
+              <div key={index} className="flex flex-col gap-2 text-center">
+                {char === ' ' ? <p className="text-transparent">.</p> : char}
                 <InputOTPSlot index={index} />
               </div>
             ))}

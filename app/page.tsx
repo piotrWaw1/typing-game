@@ -1,13 +1,13 @@
-import { Hero } from "@/components/hero";
+import { Hero } from '@/components/hero';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
+    <main className="flex min-h-screen flex-col items-center">
+      <div className="flex w-full flex-1 flex-col items-center gap-20">
         <Navbar />
-        <main className="flex-1 flex flex-col items-center justify-center gap-20 max-w-5xl p-5">
+        <main className="flex max-w-5xl flex-1 flex-col items-center justify-center gap-20 p-5">
           <Hero />
         </main>
         <Footer />

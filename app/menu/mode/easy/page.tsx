@@ -11,24 +11,22 @@ async function EasyModeContent() {
   const supabase = await createClient();
   const today = new Date().toISOString().split('T')[0];
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     redirect('/auth/login');
   }
 
-  const easy_attempt = supabase
-    .from('easy_attempt')
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('created_at', today);
+  const easy_attempt = supabase.from('easy_attempt').select('*').eq('user_id', user.id).eq('created_at', today);
 
   const easy_set = supabase.from('easy_set').select('*');
 
-  const [
-    { data: attempt, error: attemptError },
-    { data: set, error: setError },
-  ] = await Promise.all([easy_attempt, easy_set]);
+  const [{ data: attempt, error: attemptError }, { data: set, error: setError }] = await Promise.all([
+    easy_attempt,
+    easy_set,
+  ]);
 
   if (attemptError || setError || !attempt || !set) {
     return <ChallengeError />;
@@ -48,12 +46,7 @@ async function EasyModeContent() {
 
   return (
     <div>
-      <Challenge
-        title={'easy'}
-        set={set}
-        onSaveAttempt={saveAttemptEasy}
-        onSaveRound={saveRoundEasy}
-      />
+      <Challenge title={'easy'} set={set} onSaveAttempt={saveAttemptEasy} onSaveRound={saveRoundEasy} />
     </div>
   );
 }

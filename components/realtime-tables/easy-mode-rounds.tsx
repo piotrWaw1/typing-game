@@ -1,24 +1,10 @@
-"use client";
+'use client';
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface Round {
   id: number;
@@ -36,9 +22,7 @@ export default function EasyModeRounds() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [items, setItems] = useState(
-    searchParams.get("easySize") ?? DEFAULT_VALUE,
-  );
+  const [items, setItems] = useState(searchParams.get('easySize') ?? DEFAULT_VALUE);
 
   const convertToNumber = isNaN(Number(items)) ? DEFAULT_VALUE : Number(items);
 
@@ -52,9 +36,9 @@ export default function EasyModeRounds() {
   useEffect(() => {
     const fetchRounds = async () => {
       const { data } = await supabase
-        .from("easy_round")
-        .select("*")
-        .order("created_at", { ascending: false })
+        .from('easy_round')
+        .select('*')
+        .order('created_at', { ascending: false })
         .limit(convertToNumber);
 
       if (data) setRounds(data);
@@ -64,18 +48,11 @@ export default function EasyModeRounds() {
     fetchRounds().then();
 
     const channel = supabase
-      .channel("easy_round_changes")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "easy_round" },
-        (payload) => {
-          const incoming = payload.new as Round;
-          setRounds((prev) => [
-            incoming,
-            ...prev.slice(0, convertToNumber - 1),
-          ]);
-        },
-      )
+      .channel('easy_round_changes')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'easy_round' }, (payload) => {
+        const incoming = payload.new as Round;
+        setRounds((prev) => [incoming, ...prev.slice(0, convertToNumber - 1)]);
+      })
       .subscribe();
 
     return () => {
@@ -85,13 +62,9 @@ export default function EasyModeRounds() {
 
   return (
     <>
-      <div className="flex flex-row gap-4 justify-between">
+      <div className="flex flex-row justify-between gap-4">
         Easy mode new stats
-        <Select
-          value={`${items}`}
-          onValueChange={handleItemsChange}
-          defaultValue={`${DEFAULT_VALUE}`}
-        >
+        <Select value={`${items}`} onValueChange={handleItemsChange} defaultValue={`${DEFAULT_VALUE}`}>
           <SelectTrigger className="w-20">
             <SelectValue />
           </SelectTrigger>
