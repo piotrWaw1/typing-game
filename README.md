@@ -1,110 +1,124 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# ⌨️ TypingGame — Real-Time Typing Competition
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+> A real-time multiplayer typing competition platform built with Next.js.
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+🔗 **Live Demo:** [typing-game-two-sigma.vercel.app](https://typing-game-two-sigma.vercel.app/)
 
+---
 ## Features
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Proxy
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+- 🎯 **Three difficulty modes** - Choose between Easy, Medium, and Hard
+- 📅 **One attempt per difficulty per day** - Players can try each mode only once daily
+- ⏱️ **20-second rounds** - Every round lasts exactly 20 seconds
+- 📊 **End-of-game detailed stats** - See correct keystrokes, incorrect keystrokes, and overall accuracy
+- 📋 **Live results table (Easy mode)** - Real-time updating table displaying `user_name`, accuracy, and sentence
 
-## Demo
+---
+## Tech Stack
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+| Layer     | Choice                  | Reason                                     |
+| --------- | ----------------------- | ------------------------------------------ |
+| Framework | Next.js 16 (App Router) | SSR, API routes, file-based routing        |
+| Language  | TypeScript              | Type safety across the stack               |
+| Realtime  | Supabase Realtime       | Fast to configure                          |
+| Database  | Supabase                | Easy to use, good integration with next.js |
+| Styling   | Tailwind CSS and shadcn | Utility classes, ready to use components   |
+| Testing   | Playwright              | E2E                                        |
 
-## Deploy to Vercel
+---
+## Getting Started
 
-Vercel deployment will guide you through creating a Supabase account and project.
+### Prerequisites
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
-
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
-
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
-
-## Clone and run locally
-
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
-
-2. Create a Next.js app using the Supabase Starter template npx command
-
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
-
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
-
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
-
-3. Use `cd` to change into the app's directory
-
-   ```bash
-   cd with-supabase-app
-   ```
-
-4. Rename `.env.example` to `.env.local` and update the following:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=[INSERT SUPABASE PROJECT API PUBLISHABLE OR ANON KEY]
+- Node.js >= 20.9
+- npm
+### Installation
+```bash
+git clone https://github.com/piotrWaw1/typing-game.git
+cd typing-game
+npm install
 ```
 
-> [!NOTE]
-> This example uses `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, which refers to Supabase's new **publishable** key format.
-> Both legacy **anon** keys and new **publishable** keys can be used with this variable name during the transition period. Supabase's dashboard may show `NEXT_PUBLIC_SUPABASE_ANON_KEY`; its value can be used in this example.
-> See the [full announcement](https://github.com/orgs/supabase/discussions/29260) for more information.
+### Environment Variables
 
-Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
+Copy `.env` and fill in your values:
 
-5. You can now run the Next.js local development server:
+```bash
+cp .env
+```
 
-   ```bash
-   npm run dev
-   ```
+```env
+# .env
+NEXT_PUBLIC_SUPABASE_URL=https://tpbwfjimtjqdiegteznz.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_kpLvIBBKdPRB2iGCX1PcIQ_u8cEKojE
+```
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+### Run Locally
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+```bash
+npm run dev
+```
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+Open [http://localhost:3000](http://localhost:3000/).
 
-## Feedback and issues
+---
+## Running Tests
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+```bash
+# E2E tests
+npm run test:e2e
+```
 
-## More Supabase examples
+---
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+## Design Decisions
+
+## Backend & Realtime
+
+I chose **Supabase** because it provides a managed PostgreSQL database, authentication, Row Level Security (RLS), and realtime subscriptions in one solution.
+
+This eliminated the need to build a separate backend server and allowed fast integration with **Next.js**. Realtime features enable live updates without polling, and RLS ensures secure, per-user data access directly at the database level.
+## UI
+
+I used **Tailwind CSS** with **shadcn/ui** to build the interface quickly and consistently.
+
+Tailwind speeds up styling with utility classes, while shadcn provides accessible, customizable components.
+## State Management
+
+Lightweight client state is stored in URL search parameters. This keeps the implementation simple.
+## Authentication & Security
+
+Authentication is handled by Supabase. Users receive a token on login, and RLS policies verify database access automatically. This ensures secure data isolation without custom backend logic.
+## Testing & Code Quality
+
+I used **Playwright** for end-to-end testing and **Prettier** for consistent code formatting, improving reliability and maintainability.
+## Scope Decision
+
+Due to the 3-hour time constraint, I skipped matchmaking and instead implemented 3 game modes, each playable once per day.
+
+This reduced backend complexity while maintaining fairness and competitiveness, allowing me to deliver a complete and stable product within the time limit.
+## Database schema
+![img.png](img.png)
+---
+
+## What I Would Add With More Time
+
+- [ ] Historical stats & personal best tracking
+- [ ] Room-based private lobbies
+- [ ] Matchmaking system that assigns random players to a lobby.
+- [ ] Animated progress bar for each player
+- [ ] Mobile-responsive layout improvements
+- [ ] CI/CD pipeline (GitHub Actions)
+- [ ] Error monitoring (Sentry)
+- [ ] More comprehensive test coverage
+
+---
+## AI Usage
+
+- Boilerplate Next.js setup was scaffolded with `create-next-app -e with-supabase`
+- Login and sign-up forms was generated form `create-next-app -e with-supabase`
+- The `chellenge.tsx` was improve by AI
+- UI component structure was hand-written; Tailwind class suggestions were assisted by Claude
+- UI components in the `components/ui` folder are sourced from shadcn.
+- Main page in `/` was improved by Claude.
+- README formated by Claude.
